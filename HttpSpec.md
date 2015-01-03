@@ -17,8 +17,9 @@ This endpoint has the following required parameters:
 - `client_id`. Your API key.
 - `redirect_uri`. The URL that you want to redirect the person logging in back to. This URL will capture the response from the Login Dialog. 
 
-It also has the following optional parameter:
+It also has the following optional parameters:
 
+- `app_name`. The name of your application that will be displayed on the website while logging in. Defaults to your hostname.
 - `state`. An arbitrary unique string created by your website to guard against [Cross-site Request Forgery](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
 ### Handling login dialog response

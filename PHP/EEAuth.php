@@ -13,10 +13,11 @@ class EEAuth
         $this->redirect_uri = $redirect_uri;
     }
 
-    public function getLoginUrl($state = false) {
+    public function getLoginUrl($appName = false, $state = false) {
         return $this->api_url .
             '?client_id=' . $this->api_key .
             '&redirect_uri=' . $this->redirect_uri .
+            ($appName ? ('&app_name=' . $appName) : '') .
             ($state ? ('&state=' . $state) : '');
     }
 
