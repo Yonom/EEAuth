@@ -1,6 +1,7 @@
 packages/
 websocket-sharp/
 Publish/
+.idea/
 
 #################
 ## Eclipse
