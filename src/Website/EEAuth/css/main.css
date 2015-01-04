@@ -194,4 +194,9 @@ article a:hover {
 .links a {
     margin: 2px;
     display: none;
+    text-decoration: none;
+}
+
+.code-container {
+    display: none;
 }

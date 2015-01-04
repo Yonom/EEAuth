@@ -9,8 +9,8 @@ namespace EEAuth.Helpers
     {
         private static readonly Client _client = PlayerIO.QuickConnect.SimpleConnect(
             "everybody-edits-su9rn58o40itdbnw69plyw",
-            "authbot@yonom.org",
-            "Wut123456");
+            Key.Email,
+            Key.Password);
 
         public static string GenerateWorldId()
         {

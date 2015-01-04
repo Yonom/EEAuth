@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using EEAuth.Helpers;
 using EEAuth.Security;
@@ -18,6 +19,7 @@ namespace EEAuth.Services
         private Uri _redirectUri;
         private string _state;
         private string _username;
+        private int _token;
 
         public AuthService()
         {
@@ -46,7 +48,8 @@ namespace EEAuth.Services
             if (this.LoadArgs())
             {
                 string worldId = EEHelper.GenerateWorldId();
-                this.Send("room " + worldId);
+                this._token = this.GetToken();
+                this.Send("room " + worldId + " " + this._token);
                 EEHelper.Connect(worldId, this.OnEEConnect, this.OnEEError);
             }
         }
@@ -75,6 +78,14 @@ namespace EEAuth.Services
             }
 
             return true;
+        }
+
+        protected override void OnMessage(MessageEventArgs e)
+        {
+            if (this._token.ToString("D") == e.Data)
+            {
+                this.FinishLogin();
+            }
         }
 
         protected override void OnClose(CloseEventArgs e)
@@ -115,33 +126,42 @@ namespace EEAuth.Services
             }
             else if (m.Type == "add")
             {
-                if (this._username != null)
-                {
-                    this.Chat("Room contaminated. Evacuating...");
-                    this.Error("Login cancelled. Another user joined the room.");
-                }
-                else
+                new Thread(() =>
                 {
                     Thread.Sleep(1000);
 
                     this._username = m.GetString(1);
-                    this.Chat("Please chat \"yes\" to confirm the login.");
-                }
-            }
-            else if (m.Type == "left")
-            {
-                this.Die("user_cancel", "Login was cancelled. User left the room.");
+                    this.Chat("Please chat your code to confirm the login.");
+
+                }) {IsBackground = true}.Start();
+
             }
             else if (m.Type == "say" && m.GetInt(0) != 1)
             {
-                if (m.GetString(1).StartsWithIgnoreCase("y"))
+                if (m.GetString(1).StartsWithIgnoreCase(this._token.ToString()))
                 {
                     this.Chat("Login complete. You may now exit this room.");
                     this.FinishLogin();
                 }
-                else if (m.GetString(1).EqualsIgnoreCase("no"))
+            }
+        }
+
+        private int GetToken()
+        {
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                const long diff = 99999999 - 10000000;
+                var uint32Buffer = new byte[4];
+                while (true)
                 {
-                    this.Die("user_cancel", "User said no.");
+                    rng.GetBytes(uint32Buffer);
+                    UInt32 rand = BitConverter.ToUInt32(uint32Buffer, 0);
+                    const long max = (1 + (Int64)UInt32.MaxValue);
+                    const long remainder = max % diff;
+                    if (rand < max - remainder)
+                    {
+                        return (Int32)(10000000 + (rand % diff));
+                    }
                 }
             }
         }
@@ -160,12 +180,6 @@ namespace EEAuth.Services
         private void Error(string error)
         {
             this.Send("error " + error);
-            this.Close();
-        }
-
-        private void Die(string error, string description)
-        {
-            this.Send("redirect " + ResponseHelper.GetErrorUrl(this._redirectUri, error, description));
             this.Close();
         }
 

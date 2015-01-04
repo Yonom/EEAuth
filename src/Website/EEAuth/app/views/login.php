@@ -9,6 +9,7 @@
                 Generating room id, please wait...
             </div>
         </div>
+        <p><i>(keep this tab open in the background)</i></p>
         <div class="links">
             <a target="_blank" id="eelogin">
                 <img src="/images/ee_login.png" alt="Direct link for everybodyedits.com users.">
@@ -17,7 +18,10 @@
                 <img src="/images/facebook_login.png" alt="Direct link for facebook.com users.">
             </a>
         </div>
-        <p><i>(keep this tab open in the background)</i></p>
+        <div id="codecontainer" class="code-container">
+            <p>and chat the following code in the room</p>
+            <h2 id="code"></h2>
+        </div>
     </row>
 </div>
 
@@ -25,13 +29,15 @@
     var roomid = document.getElementById('roomid');
     var eelogin = document.getElementById('eelogin');
     var fblogin = document.getElementById('fblogin');
+    var code = document.getElementById('code');
+    var codecontainer = document.getElementById('codecontainer');
     var ws = new WebSocket("wss://eeauth.yonom.org:5010/Auth" + window.location.search);
 
     ws.onmessage = function (event) {
         var args = event.data.split(" ");
         console.log(args);
         if (args[0] == "room"){
-            room(args[1]);
+            room(args[1], args[2]);
         } else if (args[0] == "redirect") {
             success();
             window.location = args[1];
@@ -46,8 +52,9 @@
             error("Disconnected. Please try again later.");
     }
 
-    function room(roomId) {
+    function room(roomId, token) {
         roomid.innerHTML = roomId;
+        code.innerHTML = token;
         showLinks(roomId);
     }
 
@@ -69,10 +76,12 @@
 
         eelogin.style.display = "inline";
         fblogin.style.display = "inline";
+        codecontainer.style.display = "inline";
     }
 
     function hideLinks() {
         eelogin.style.display = "none";
         fblogin.style.display = "none";
+        codecontainer.style.display = "none";
     }
 </script>
