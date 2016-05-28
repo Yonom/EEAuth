@@ -128,12 +128,13 @@ namespace EEAuth.Services
             }
             else if (m.Type == "add")
             {
+                this._userId = m.GetInt(0);
+                this._username = m.GetString(1);
+                this._connectUserId = m.GetString(2);
+
                 new Thread(() =>
                 {
                     Thread.Sleep(1000);
-                    this._userId = m.GetInt(0);
-                    this._username = m.GetString(1);
-                    this._connectUserId = m.GetString(2);
                     this.Chat("Please chat your code to confirm the login.");
                 }) {IsBackground = true}.Start();
             }
