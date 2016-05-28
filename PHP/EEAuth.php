@@ -2,7 +2,7 @@
 
 class EEAuth
 {
-    private $api_url = 'http://eeauth.spambler.com/login';
+    private $api_url = 'https://eeauth.spambler.com/login';
     private $api_key;
     private $api_secret;
     private $redirect_uri;
