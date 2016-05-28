@@ -44,7 +44,8 @@ In order to parse this data, you must first base64 decode it. The result is a JS
 
 This object contains the following (required) fields:
 
-- **name:** the username of the verified user
+- **name:** the username of the verified user (will change if user changes username)
+- **connectuserid:** the connectuserid of the verified user (will never change)
 - **expires:** unix time in UTC, when this login token expires
 - **sig:** the signature to verify the integrity of this response
 
