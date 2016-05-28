@@ -20,6 +20,7 @@ namespace EEAuth.Services
         private string _state;
         private string _username;
         private string _connectUserId;
+        private bool _userIsSet;
         private int _token;
 
         public AuthService()
@@ -129,11 +130,15 @@ namespace EEAuth.Services
             {
                 new Thread(() =>
                 {
-                    Thread.Sleep(1000);
+                    if (!this._userIsSet)
+                    {
+                        Thread.Sleep(1000);
 
-                    this._username = m.GetString(1);
-                    this._connectUserId = m.GetString(2);
-                    this.Chat("Please chat your code to confirm the login.");
+                        this._userIsSet = true;
+                        this._username = m.GetString(1);
+                        this._connectUserId = m.GetString(2);
+                        this.Chat("Please chat your code to confirm the login.");
+                    }
 
                 }) {IsBackground = true}.Start();
 

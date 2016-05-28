@@ -30,7 +30,7 @@ namespace EEAuth.Helpers
                 worldId, 
                 "Everybodyedits" + ver, 
                 false,
-                new Dictionary<string, string> {{"name", "**** [EEAuth v1.0] fuck"}}, 
+                new Dictionary<string, string> {{"name", "**** [EEAuth v1.0.1] fuck"}}, 
                 null, 
                 successCallback,
                 errorCallback);
