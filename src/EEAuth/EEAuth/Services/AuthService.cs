@@ -126,17 +126,16 @@ namespace EEAuth.Services
             {
                 this.Chat("You are about to login with EEAuth.");
             }
-            else if (m.Type == "add")
+            else if (m.Type == "add" && m.GetBoolean(8))
             {
                 this._userId = m.GetInt(0);
                 this._username = m.GetString(1);
                 this._connectUserId = m.GetString(2);
 
-                new Thread(() =>
-                {
+                ThreadPool.QueueUserWorkItem(delegate {
                     Thread.Sleep(1000);
-                    this.Chat("Please chat your code to confirm the login.");
-                }) {IsBackground = true}.Start();
+                    this.Chat(this._username.ToUpper() + ": Please chat your code to confirm the login.");
+                });
             }
             else if (m.Type == "say" && m.GetInt(0) == this._userId)
             {
