@@ -53,8 +53,9 @@
     <Reference Include="MuffinFramework.NET">
       <HintPath>..\packages\WebNom.1.2.1\lib\net40\MuffinFramework.NET.dll</HintPath>
     </Reference>
-    <Reference Include="PlayerIOClient">
-      <HintPath>.\PlayerIOClient.dll</HintPath>
+    <Reference Include="PlayerIOClient, Version=2.3.6.0, Culture=neutral, PublicKeyToken=c7f7b730653f6a44, processorArchitecture=MSIL">
+      <HintPath>..\packages\PlayerIOClient-Signed.3.2.483\lib\PlayerIOClient.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.0.35.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

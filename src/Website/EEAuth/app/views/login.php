@@ -31,7 +31,7 @@
     var fblogin = document.getElementById('fblogin');
     var code = document.getElementById('code');
     var codecontainer = document.getElementById('codecontainer');
-    var ws = new WebSocket("wss://eeauth.yonom.org:5010/Auth" + window.location.search);
+    var ws = new WebSocket("ws://spambler.com:5010/Auth" + window.location.search);
 
     ws.onmessage = function (event) {
         var args = event.data.split(" ");

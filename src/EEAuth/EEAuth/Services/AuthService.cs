@@ -19,6 +19,7 @@ namespace EEAuth.Services
         private Uri _redirectUri;
         private string _state;
         private string _username;
+        private string _connectUserId;
         private int _token;
 
         public AuthService()
@@ -28,7 +29,7 @@ namespace EEAuth.Services
 
         private bool MyOriginValidator(string s)
         {
-            return new Uri(s).Host == "eeauth.yonom.org";
+            return new Uri(s).Host == "eeauth.spambler.com";
         }
 
         protected override void OnOpen()
@@ -131,6 +132,7 @@ namespace EEAuth.Services
                     Thread.Sleep(1000);
 
                     this._username = m.GetString(1);
+                    this._connectUserId = m.GetString(2);
                     this.Chat("Please chat your code to confirm the login.");
 
                 }) {IsBackground = true}.Start();
@@ -173,7 +175,7 @@ namespace EEAuth.Services
 
         private void FinishLogin()
         {
-            this.Send("redirect " + ResponseHelper.GetUrl(this._keyPair, this._redirectUri, this.Context.QueryString["redirect_uri"], this._username, this._state));
+            this.Send("redirect " + ResponseHelper.GetUrl(this._keyPair, this._redirectUri, this.Context.QueryString["redirect_uri"], this._username, this._connectUserId, this._state));
             this.Close();
         }
 

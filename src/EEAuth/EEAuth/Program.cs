@@ -13,7 +13,7 @@ namespace EEAuth
     {
         private static void Main()
         {
-            var websocket = new WebSocketServer(IPAddress.Any, 5010, true)
+            var websocket = new WebSocketServer(IPAddress.Any, 5010, false)
             {
                 SslConfiguration = { ServerCertificate = Key.Cert },
                 Log = { Level = LogLevel.Info }

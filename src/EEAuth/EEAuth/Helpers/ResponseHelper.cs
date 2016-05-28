@@ -11,13 +11,14 @@ namespace EEAuth.Helpers
 {
     internal static class ResponseHelper
     {
-        public static string GetUrl(KeyPair keyPair, Uri redirectUri, string reqRedirectUri, string username, string state)
+        public static string GetUrl(KeyPair keyPair, Uri redirectUri, string reqRedirectUri, string username, string connectUserId, string state)
         {
             var response = new Dictionary<string, string>
             {
                 {"redirect_uri", reqRedirectUri},
                 {"expires", Convert.ToString(UnixTimeNow() + 60)},
-                {"name", username}
+                {"name", username},
+                {"connectuserid", connectUserId}
             };
             if (state != null)
                 response.Add("state", state);

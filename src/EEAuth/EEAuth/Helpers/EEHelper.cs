@@ -10,13 +10,16 @@ namespace EEAuth.Helpers
         private static readonly Client _client = PlayerIO.QuickConnect.SimpleConnect(
             "everybody-edits-su9rn58o40itdbnw69plyw",
             Key.Email,
-            Key.Password);
+            Key.Password,
+            null);
 
         public static string GenerateWorldId()
         {
-            return UnixCrypt.Crypt("OW", Guid.NewGuid().ToString("D"))
+            string roomId = UnixCrypt.Crypt("OW", Guid.NewGuid().ToString("D"))
                 .Replace("/", null)
                 .Replace(".", null);
+            Console.WriteLine(roomId);
+            return roomId;
         }
 
         public static void Connect(string worldId, Callback<Connection> successCallback,

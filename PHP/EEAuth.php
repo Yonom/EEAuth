@@ -2,7 +2,7 @@
 
 class EEAuth
 {
-    private $api_url = 'http://eeauth.yonom.org/login';
+    private $api_url = 'http://eeauth.spambler.com/login';
     private $api_key;
     private $api_secret;
     private $redirect_uri;
@@ -35,7 +35,8 @@ class EEAuth
             throw new InvalidArgumentException("Login has expired.");
 
         $response = array(
-            'name' => $json['name']
+            'name' => $json['name'],
+            'connectuserid' => $json['connectuserid']
         );
         if (isset($json['state'])){
             $response['state'] = $json['state'];

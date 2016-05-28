@@ -3,7 +3,7 @@
 
     <article>
         <h3>How does this work? Can you show me an example?</h3>
-        <p>Sure, <a href="https://testauth.yonom.org/">https://testauth.yonom.org/</a> contains an example website that uses EEAuth to log you in.</p>
+        <p>Sure, <a href="http://files.spambler.com/eeauth">this site</a> contains an example website that uses EEAuth to log you in.</p>
     </article>
 
     <article>
