@@ -80,7 +80,7 @@ Pseudo code:
 	
 	args_concat = join(args_sorted) 
 	
-	# Output: expires=14203120008name=processor
+	# Output: connectuserid=simple1299854374781x44expires=14203120008name=nvd
 	#         redirect_uri=http://www.example.com/login.php
 	
 	sig = hmacmd5(api_secret, args_concat)
