@@ -37,7 +37,8 @@ In order to parse this data, you must first base64 decode it. The result is a JS
      
     {
         "expires":"1420312000",
-        "name":"processor",
+        "name":"nvd",
+        "connectuserid":"simple1299854374781x44",
         "sig":"/yVN/A86hRMwWuyImWTLEg=="
     }
 
