@@ -16,7 +16,7 @@ if (isset($_GET['error'])) { // If there is an error
 try {
     $loginData = $eeAuth->verifyLogin($_GET['data']); // This throws an exception if the login is invalid
     $username = $loginData['name'];
-	$connectuserid = $loginData['connectuserid'];
+    $connectuserid = $loginData['connectuserid'];
 
     // TODO Set the session tokens here
 } catch (Exception $ex) {
