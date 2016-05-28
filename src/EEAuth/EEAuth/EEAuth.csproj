@@ -57,9 +57,9 @@
       <HintPath>..\packages\PlayerIOClient-Signed.3.2.483\lib\PlayerIOClient.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.Text, Version=4.0.35.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ServiceStack.Text.4.0.35\lib\net40\ServiceStack.Text.dll</HintPath>
+    <Reference Include="ServiceStack.Text, Version=4.0.56.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ServiceStack.Text.4.0.56\lib\net40\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -73,6 +73,10 @@
     <Reference Include="System.Xml" />
     <Reference Include="WebNom">
       <HintPath>..\packages\WebNom.1.2.1\lib\net40\WebNom.dll</HintPath>
+    </Reference>
+    <Reference Include="websocket-sharp, Version=1.0.2.24475, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Desktop\websocket-sharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -92,12 +96,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\websocket-sharp\websocket-sharp.csproj">
-      <Project>{b357bac7-529e-4d81-a0d2-71041b19c8de}</Project>
-      <Name>websocket-sharp</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0">

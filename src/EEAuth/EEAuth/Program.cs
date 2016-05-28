@@ -1,5 +1,5 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System;
+using System.Net;
 using EEAuth.Helpers;
 using EEAuth.Security;
 using EEAuth.Services;
@@ -13,7 +13,7 @@ namespace EEAuth
     {
         private static void Main()
         {
-            var websocket = new WebSocketServer(IPAddress.Any, 5010, false)
+            var websocket = new WebSocketServer(IPAddress.Any, 5010, true)
             {
                 SslConfiguration = { ServerCertificate = Key.Cert },
                 Log = { Level = LogLevel.Info }
@@ -28,7 +28,11 @@ namespace EEAuth
             };
             webnom.Start();
 
-            Thread.Sleep(Timeout.Infinite);
+            while(true)
+            {
+                if (Console.ReadLine() == "exit")
+                    Environment.Exit(0);
+            }
         }
     }
 }
