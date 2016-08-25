@@ -18,11 +18,11 @@
     </article>
     <article>
         <h2>Step 2: API Implementations</h2>
-        <p>To communicate with EEAuth from your server, you need an implementation of EEAuth's <a href="https://github.com/Yonom/EEAuth/blob/master/HttpSpec.md">HTTP Spec</a>.</p>
-        <p>We provide an official library for PHP, which you can download here:<br><a href="https://raw.githubusercontent.com/Yonom/EEAuth/master/PHP/EEAuth.php">https://raw.githubusercontent.com/Yonom/EEAuth/master/PHP/EEAuth.php</a></p>
+        <p>To communicate with EEAuth from your server, you need an implementation of EEAuth's <a href="https://github.com/Spambler/EEAuth/blob/master/HttpSpec.md">HTTP Spec</a>.</p>
+        <p>We provide an official library for PHP, which you can download here:<br><a href="https://raw.githubusercontent.com/Spambler/EEAuth/master/PHP/EEAuth.php">https://raw.githubusercontent.com/Spambler/EEAuth/master/PHP/EEAuth.php</a></p>
     </article>
     <article>
         <h2>Step 3: Using the PHP library</h2>
-        Please take a look at <a href="https://github.com/Yonom/EEAuth/blob/master/PHP/example.php">this example</a> to learn how to use the PHP library.
+        Please take a look at <a href="https://github.com/Spambler/EEAuth/blob/master/PHP/example.php">this example</a> to learn how to use the PHP library.
     </article>
 </div>
