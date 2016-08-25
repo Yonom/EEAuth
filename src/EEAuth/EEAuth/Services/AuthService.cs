@@ -85,7 +85,7 @@ namespace EEAuth.Services
 
             if (selectedPlayer == null)
             {
-                Error("Invalid key! Please reload page.");
+                Error("Invalid authentication code. Please reload page to retry.");
                 return;
             }
 
