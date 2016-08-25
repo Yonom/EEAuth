@@ -25,11 +25,11 @@ namespace EEAuth.Helpers
             response.Add("sig", Sign.CalcSig(keyPair, response));
             response.Remove("redirect_uri");
 
-            string jsonOutput = JsonSerializer.SerializeToString(response);
-            string jsonBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonOutput));
+            var jsonOutput = JsonSerializer.SerializeToString(response);
+            var jsonBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonOutput));
 
             var uriBuilder = new UriBuilder(redirectUri);
-            NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["data"] = jsonBase64;
             uriBuilder.Query = query.ToString();
 
@@ -38,14 +38,14 @@ namespace EEAuth.Helpers
 
         private static long UnixTimeNow()
         {
-            TimeSpan timeSpan = (DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0));
-            return (long)timeSpan.TotalSeconds;
+            var timeSpan = DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0);
+            return (long) timeSpan.TotalSeconds;
         }
 
         internal static string GetErrorUrl(Uri redirectUri, string error, string description)
         {
             var uriBuilder = new UriBuilder(redirectUri);
-            NameValueCollection query = HttpUtility.ParseQueryString(uriBuilder.Query);
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
             query["error"] = error;
             query["error_description"] = description;
             uriBuilder.Query = query.ToString();

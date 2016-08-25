@@ -11,54 +11,55 @@ namespace EEAuth.Services
 {
     public class AuthBot
     {
-        private Random random = new Random();
+        private readonly Random _random = new Random();
         private Connection _connection;
         public Dictionary<int, Player> Players = new Dictionary<int, Player>();
 
         public AuthBot()
         {
-            this.Connect();
+            Connect();
         }
 
-        public void Connect()
+        public void Connect() => EEHelper.Connect(EEHelper.WorldId, OnEeConnect, OnEeError);
+
+        private void OnEeConnect(Connection conn)
         {
-            EEHelper.Connect(EEHelper.worldId, this.OnEEConnect, this.OnEEError);
+            _connection = conn;
+            _connection.OnMessage += OnEeMessage;
+            _connection.OnDisconnect += OnEeDisconnect;
+            _connection.Send("init");
         }
 
-        private void OnEEConnect(Connection conn)
-        {
-            this._connection = conn;
-            this._connection.OnMessage += this.OnEEMessage;
-            this._connection.OnDisconnect += this.OnEEDisconnect;
-            this._connection.Send("init");
-        }
-
-        private void OnEEDisconnect(object sender, string arg)
+        private void OnEeDisconnect(object sender, string arg)
         {
             Thread.Sleep(3000);
-            this.Connect();
+            Connect();
         }
 
-        private void OnEEError(PlayerIOError err)
+        private void OnEeError(PlayerIOError err)
         {
             Console.WriteLine(err.Message);
-            Environment.Exit(1);
+            Thread.Sleep(10000);
+            Connect();
         }
 
-        private void OnEEMessage(object sender, Message m)
+        private void OnEeMessage(object sender, Message m)
         {
             try
             {
                 if (m.Type == "init")
                 {
-                    this._connection.Send("init2");
-                    this._connection.Send("name", "EEAuth v2.0.1");
+                    _connection.Send("init2");
+                    _connection.Send("name", "EEAuth v2.0.1");
                 }
                 else if (m.Type == "add" && m.GetBoolean(8))
                 {
                     var userId = m.GetInt(0);
                     var username = m.GetString(1);
                     var connectUserId = m.GetString(2);
+
+                    if (Players.ContainsKey(userId))
+                        Players.Remove(userId);
 
                     Players.Add(userId, new Player
                     {
@@ -67,20 +68,17 @@ namespace EEAuth.Services
                         Token = GetToken()
                     });
 
-                    ThreadPool.QueueUserWorkItem(delegate
-                    {
-                        Thread.Sleep(1000);
-                        this.PmTo(username, "Hello, you are logging in with EEAuth.");
-                        Thread.Sleep(1000);
-                        this.PmTo(username, $"Your authentication code is: {Players[userId].Token}");
-                    });
+                    Thread.Sleep(1000);
+                    PmTo(username, "Hello, you are logging in with EEAuth.");
+                    Thread.Sleep(700);
+                    PmTo(username, $"Your authentication code is: {Players[userId].Token}");
                 }
                 else if (m.Type == "left")
                 {
                     var userId = m.GetInt(0);
 
-                    if (Global.Bot.Players.ContainsKey(userId))
-                        Global.Bot.Players.Remove(userId);
+                    if (Players.ContainsKey(userId))
+                        Players.Remove(userId);
                 }
                 else if (m.Type == "say")
                 {
@@ -100,7 +98,6 @@ namespace EEAuth.Services
                         else
                         {
                             KickUser(Players[userId].Username, "Do not share your authentication code in the chat.");
-                            Global.Bot.Players.Remove(userId);
                         }
                     }
                 }
@@ -113,19 +110,19 @@ namespace EEAuth.Services
 
         public void PmTo(string name, string text)
         {
-            this._connection.Send("say", $"/pm {name} {text}");
+            _connection.Send("say", $"/pm {name} {text}");
         }
 
         public void KickUser(string name, string reason)
         {
-            this._connection.Send("say", $"/kick {name} {reason}");
+            _connection.Send("say", $"/kick {name} {reason}");
         }
 
         private string GetToken()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz-_";
             return new string(Enumerable.Repeat(chars, 16)
-              .Select(s => s[random.Next(s.Length)]).ToArray());
+                .Select(s => s[_random.Next(s.Length)]).ToArray());
         }
     }
 
@@ -134,6 +131,6 @@ namespace EEAuth.Services
         public string Username { get; set; }
         public string ConnectUserId { get; set; }
         public string Token { get; set; } = "";
-        public int TokenSpoils { get; set; } = 0;
+        public int TokenSpoils { get; set; }
     }
 }

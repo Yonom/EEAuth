@@ -32,14 +32,14 @@ namespace EEAuth.Security
         ///     The list with characters allowed in a Unix encrypted password.
         ///     It is used to randomly chose two characters for use in the encryption.
         /// </value>
-        private static readonly string m_encryptionSaltCharacters =
+        private static readonly string MEncryptionSaltCharacters =
             "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
 
         /// <value>
         ///     A lookup-table, presumably filled with some sort of encryption key.
         ///     It is used to calculate the index to the m_SPTranslationTable lookup-table.
         /// </value>
-        private static readonly uint[] m_saltTranslation =
+        private static readonly uint[] MSaltTranslation =
         {
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -63,7 +63,7 @@ namespace EEAuth.Security
         ///     A lookup-table.
         ///     It is used to calculate the index to the m_skb lookup-table.
         /// </value>
-        private static readonly bool[] m_shifts =
+        private static readonly bool[] MShifts =
         {
             false, false, true, true, true, true, true, true,
             false, true, true, true, true, true, true, false
@@ -73,7 +73,7 @@ namespace EEAuth.Security
         ///     A lookup-table.
         ///     It is used the dynamically create the schedule lookup-table.
         /// </value>
-        private static readonly uint[,] m_skb =
+        private static readonly uint[,] MSkb =
         {
             {
                 /* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
@@ -233,7 +233,7 @@ namespace EEAuth.Security
         ///     A lookup-table.
         ///     It is used to calculate two ints that are used to encrypt the password.
         /// </value>
-        private static readonly uint[,] m_SPTranslationTable =
+        private static readonly uint[,] MSpTranslationTable =
         {
             {
                 /* nibble 0 */
@@ -394,7 +394,7 @@ namespace EEAuth.Security
         ///     It is used to make sure the encrypted password contains only printable characters. It is filled with
         ///     ASCII characters 46 - 122 (from the dot (.) untill (including) the lowercase 'z').
         /// </value>
-        private static readonly uint[] m_characterConversionTable =
+        private static readonly uint[] MCharacterConversionTable =
         {
             0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
             0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44,
@@ -409,7 +409,7 @@ namespace EEAuth.Security
         /// <value>
         ///     Marks the size of the dynamically created schedule lookup-table.
         /// </value>
-        private static readonly int m_desIterations = 16;
+        private static readonly int MDesIterations = 16;
 
 
         /// <summary>
@@ -494,9 +494,9 @@ namespace EEAuth.Security
         /// </summary>
         /// <param name="encryptionKey">The input data to use for the bit manipulations.</param>
         /// <returns>m_desIterations * 2 number of uints that are the result of the manipulations.</returns>
-        private static uint[] SetDESKey(byte[] encryptionKey)
+        private static uint[] SetDesKey(byte[] encryptionKey)
         {
-            var schedule = new uint[m_desIterations * 2];
+            var schedule = new uint[MDesIterations * 2];
 
             uint firstInt = FourBytesToInt(encryptionKey, 0);
             uint secondInt = FourBytesToInt(encryptionKey, 4);
@@ -530,9 +530,9 @@ namespace EEAuth.Security
             uint firstSkbValue, secondSkbValue;
             uint scheduleIndex = 0;
 
-            for (int index = 0; index < m_desIterations; index++)
+            for (int index = 0; index < MDesIterations; index++)
             {
-                needToShift = m_shifts[index];
+                needToShift = MShifts[index];
                 if (needToShift)
                 {
                     firstInt = (firstInt >> 2) | (firstInt << 26);
@@ -547,17 +547,17 @@ namespace EEAuth.Security
                 firstInt &= 0x0FFFFFFF;
                 secondInt &= 0xFFFFFFF;
 
-                firstSkbValue = m_skb[0, firstInt & 0x3F] |
-                                m_skb[1, ((firstInt >> 6) & 0x03) | ((firstInt >> 7) & 0x3C)] |
-                                m_skb[2, ((firstInt >> 13) & 0x0F) | ((firstInt >> 14) & 0x30)] |
-                                m_skb[
+                firstSkbValue = MSkb[0, firstInt & 0x3F] |
+                                MSkb[1, ((firstInt >> 6) & 0x03) | ((firstInt >> 7) & 0x3C)] |
+                                MSkb[2, ((firstInt >> 13) & 0x0F) | ((firstInt >> 14) & 0x30)] |
+                                MSkb[
                                     3, ((firstInt >> 20) & 0x01) | ((firstInt >> 21) & 0x06) | ((firstInt >> 22) & 0x38)
                                     ];
 
-                secondSkbValue = m_skb[4, secondInt & 0x3F] |
-                                 m_skb[5, ((secondInt >> 7) & 0x03) | ((secondInt >> 8) & 0x3C)] |
-                                 m_skb[6, (secondInt >> 15) & 0x3F] |
-                                 m_skb[7, ((secondInt >> 21) & 0x0F) | ((secondInt >> 22) & 0x30)];
+                secondSkbValue = MSkb[4, secondInt & 0x3F] |
+                                 MSkb[5, ((secondInt >> 7) & 0x03) | ((secondInt >> 8) & 0x3C)] |
+                                 MSkb[6, (secondInt >> 15) & 0x3F] |
+                                 MSkb[7, ((secondInt >> 21) & 0x0F) | ((secondInt >> 22) & 0x30)];
 
                 schedule[scheduleIndex++] = ((secondSkbValue << 16) | (firstSkbValue & 0xFFFF)) & 0xFFFFFFFF;
                 firstSkbValue = ((firstSkbValue >> 16) | (secondSkbValue & 0xFFFF0000));
@@ -593,14 +593,14 @@ namespace EEAuth.Security
             firstInt = (thirdInt ^ (thirdInt << 16)) ^ right ^ schedule[scheduleIndex + 1];
             firstInt = (firstInt >> 4) | (firstInt << 28);
 
-            left ^= (m_SPTranslationTable[1, firstInt & 0x3F] |
-                     m_SPTranslationTable[3, (firstInt >> 8) & 0x3F] |
-                     m_SPTranslationTable[5, (firstInt >> 16) & 0x3F] |
-                     m_SPTranslationTable[7, (firstInt >> 24) & 0x3F] |
-                     m_SPTranslationTable[0, secondInt & 0x3F] |
-                     m_SPTranslationTable[2, (secondInt >> 8) & 0x3F] |
-                     m_SPTranslationTable[4, (secondInt >> 16) & 0x3F] |
-                     m_SPTranslationTable[6, (secondInt >> 24) & 0x3F]);
+            left ^= (MSpTranslationTable[1, firstInt & 0x3F] |
+                     MSpTranslationTable[3, (firstInt >> 8) & 0x3F] |
+                     MSpTranslationTable[5, (firstInt >> 16) & 0x3F] |
+                     MSpTranslationTable[7, (firstInt >> 24) & 0x3F] |
+                     MSpTranslationTable[0, secondInt & 0x3F] |
+                     MSpTranslationTable[2, (secondInt >> 8) & 0x3F] |
+                     MSpTranslationTable[4, (secondInt >> 16) & 0x3F] |
+                     MSpTranslationTable[6, (secondInt >> 24) & 0x3F]);
 
             return left;
         }
@@ -621,7 +621,7 @@ namespace EEAuth.Security
 
             for (int index = 0; index < 25; index++)
             {
-                for (uint secondIndex = 0; secondIndex < m_desIterations * 2; secondIndex += 4)
+                for (uint secondIndex = 0; secondIndex < MDesIterations * 2; secondIndex += 4)
                 {
                     left = DEncrypt(left, right, secondIndex, firstSaltTranslator, secondSaltTranslator, schedule);
                     right = DEncrypt(right, left, secondIndex + 2, firstSaltTranslator, secondSaltTranslator, schedule);
@@ -679,13 +679,13 @@ namespace EEAuth.Security
         {
             var randomGenerator = new Random();
 
-            int maxGeneratedNumber = m_encryptionSaltCharacters.Length;
+            int maxGeneratedNumber = MEncryptionSaltCharacters.Length;
             int randomIndex;
             var encryptionSaltBuilder = new StringBuilder();
             for (int index = 0; index < 2; index++)
             {
                 randomIndex = randomGenerator.Next(maxGeneratedNumber);
-                encryptionSaltBuilder.Append(m_encryptionSaltCharacters[randomIndex]);
+                encryptionSaltBuilder.Append(MEncryptionSaltCharacters[randomIndex]);
             }
 
             string encryptionSalt = encryptionSaltBuilder.ToString();
@@ -720,8 +720,8 @@ namespace EEAuth.Security
             encryptionBuffer[1] = secondSaltCharacter;
 
             // Use the ASCII value of the salt characters to lookup a number in the salt translation table.
-            uint firstSaltTranslator = m_saltTranslation[Convert.ToUInt32(firstSaltCharacter)];
-            uint secondSaltTranslator = m_saltTranslation[Convert.ToUInt32(secondSaltCharacter)] << 4;
+            uint firstSaltTranslator = MSaltTranslation[Convert.ToUInt32(firstSaltCharacter)];
+            uint secondSaltTranslator = MSaltTranslation[Convert.ToUInt32(secondSaltCharacter)] << 4;
 
             // Build the first encryption key table by taking the ASCII value of every character in the text to encrypt and
             // multiplying it by two. Note how the cast will not lose any information. The highest possible ASCII character
@@ -734,7 +734,7 @@ namespace EEAuth.Security
                 encryptionKey[index] = (byte)(shiftedCharacter << 1);
             }
 
-            uint[] schedule = SetDESKey(encryptionKey);
+            uint[] schedule = SetDesKey(encryptionKey);
             uint[] singleOutputKey = Body(schedule, firstSaltTranslator, secondSaltTranslator);
 
             var binaryBuffer = new byte[9];
@@ -772,7 +772,7 @@ namespace EEAuth.Security
                     //encryptionBuffer[index] = Convert.ToChar(m_characterConversionTable[passwordCharacter]);
                 }
 
-                encryptionBuffer[index] = Convert.ToChar(m_characterConversionTable[passwordCharacter]);
+                encryptionBuffer[index] = Convert.ToChar(MCharacterConversionTable[passwordCharacter]);
             }
 
             return encryptionBuffer.ToString();

@@ -21,28 +21,25 @@ namespace EEAuth.Services
             this.IgnoreExtensions = true;
         }
 
-        private bool MyOriginValidator(string s)
-        {
-            return new Uri(s).Host == "eeauth.spambler.com";
-        }
+        private bool MyOriginValidator(string s) => new Uri(s).Host == "eeauth.spambler.com";
 
         protected override void OnOpen()
         {
-            this.Log.Info(String.Format("Connection: ip {0} url {1}", this.Context.UserEndPoint, this.Context.Origin));
-            new Thread(this.TimeoutWork) {IsBackground = true}.Start();
+            Log.Info($"Connection: ip {Context.UserEndPoint} url {Context.Origin}");
+            new Thread(TimeoutWork) {IsBackground = true}.Start();
 
             if (
-                this.Sessions.Sessions.Where(
-                    session => Equals(session.Context.UserEndPoint.Address, this.Context.UserEndPoint.Address))
-                    .Count(session => session.ID != this.ID) >= 3)
+                Sessions.Sessions.Where(
+                    session => Equals(session.Context.UserEndPoint.Address, Context.UserEndPoint.Address))
+                    .Count(session => session.ID != ID) >= 3)
             {
-                this.Error("IP limit reached.");
+                Error("IP limit reached.");
                 return;
             }
 
-            if (this.LoadArgs())
+            if (LoadArgs())
             {
-                this.Send("room " + EEHelper.worldId);
+                Send("room " + EEHelper.WorldId);
             }
         }
 
@@ -54,24 +51,24 @@ namespace EEAuth.Services
 
         private bool LoadArgs()
         {
-            this._state = this.Context.QueryString["state"];
+            _state = Context.QueryString["state"];
             try
             {
-                this._redirectUri = new UriBuilder(this.Context.QueryString["redirect_uri"]).Uri;
+                _redirectUri = new UriBuilder(Context.QueryString["redirect_uri"]).Uri;
             }
             catch (Exception)
             {
-                this.Error("Invalid redirect_uri parameter.");
+                Error("Invalid redirect_uri parameter.");
                 return false;
             }
 
             try
             {
-                this._keyPair = KeyPair.FromPublicPart(this.Context.QueryString["client_id"]);
+                _keyPair = KeyPair.FromPublicPart(Context.QueryString["client_id"]);
             }
             catch (Exception)
             {
-                this.Error("Invalid client_id parameter.");
+                Error("Invalid client_id parameter.");
                 return false;
             }
 
@@ -80,7 +77,7 @@ namespace EEAuth.Services
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            Player selectedPlayer = Global.Bot.Players.Values.FirstOrDefault((Player p) => "verifyCode" + p.Token == e.Data);
+            var selectedPlayer = Global.Bot.Players.Values.FirstOrDefault(p => "verifyCode" + p.Token == e.Data);
             Console.WriteLine(e.Data);
 
             if (selectedPlayer == null)
@@ -90,33 +87,39 @@ namespace EEAuth.Services
             }
 
             Global.Bot.PmTo(selectedPlayer.Username, "Thank you for using EEAuth. You may leave this world now.");
-            Global.Bot.Players.Remove(Global.Bot.Players.FirstOrDefault(val => val.Value == selectedPlayer).Key);
+
+            var userId = Global.Bot.Players.FirstOrDefault(val => val.Value == selectedPlayer).Key;
+            if (Global.Bot.Players.ContainsKey(userId))
+                Global.Bot.Players.Remove(userId);
+
             FinishLogin(selectedPlayer.Username, selectedPlayer.ConnectUserId);
         }
 
         private void TimeoutWork()
         {
-            this._timeoutResetEvent.WaitOne(new TimeSpan(0, 10, 0));
-            if (this.Context.WebSocket.IsAlive)
-                this.Error("Authentication timed out. Please reload page.");
+            _timeoutResetEvent.WaitOne(new TimeSpan(0, 10, 0));
+            if (Context.WebSocket.IsAlive)
+                Error("Authentication timed out. Please reload page.");
         }
 
         private void FinishLogin(string username, string connectUserId)
         {
-            this.Send("redirect " + ResponseHelper.GetUrl(this._keyPair, this._redirectUri, this.Context.QueryString["redirect_uri"], username, connectUserId, this._state));
-            this.Close();
+            Send("redirect " +
+                 ResponseHelper.GetUrl(_keyPair, _redirectUri, Context.QueryString["redirect_uri"], username,
+                     connectUserId, _state));
+            Close();
         }
 
         private void Error(string error)
         {
-            this.Send("error " + error);
-            this.Close();
+            Send("error " + error);
+            Close();
         }
 
         private void Close()
         {
-            this.Context.WebSocket.Close(CloseStatusCode.Normal);
-            this._timeoutResetEvent.Set();
+            Context.WebSocket.Close(CloseStatusCode.Normal);
+            _timeoutResetEvent.Set();
         }
     }
 }

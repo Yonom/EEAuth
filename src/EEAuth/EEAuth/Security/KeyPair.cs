@@ -11,8 +11,8 @@ namespace EEAuth.Security
 
         public KeyPair(string publicKey, string privateKey)
         {
-            this.PublicKey = publicKey;
-            this.PrivateKey = privateKey;
+            PublicKey = publicKey;
+            PrivateKey = privateKey;
         }
 
         public string PublicKey { get; set; }
@@ -40,7 +40,7 @@ namespace EEAuth.Security
 
         private static string ToPrivate(byte[] publicKey)
         {
-            return Key.HMAC.ComputeHash(publicKey).ToToken();
+            return Key.Hmac.ComputeHash(publicKey).ToToken();
         }
     }
 }

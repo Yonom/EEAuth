@@ -7,10 +7,10 @@ namespace EEAuth.Security
 {
     public static class Key
     {
-        public static HMACSHA1 HMAC; // Removed
-        public static X509Certificate2 Cert // Removed
+        public static HMACSHA1 Hmac; // Removed
+        public static X509Certificate2 Cert; // Removed
 
-        public static String Email; // Removed
-        public static String Password; // Removed
+        public static string Email; // Removed
+        public static string Password; // Removed
     }
 }

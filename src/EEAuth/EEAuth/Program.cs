@@ -13,27 +13,36 @@ namespace EEAuth
     {
         private static void Main()
         {
-            Global.Bot = new AuthBot();
-
-            var websocket = new WebSocketServer(IPAddress.Any, 5010, true)
+            try
             {
-                SslConfiguration = { ServerCertificate = Key.Cert },
-                Log = { Level = LogLevel.Info }
-            };
-            websocket.AddWebSocketService<AuthService>("/Auth");
-            websocket.Start();
+                Global.Bot = new AuthBot();
 
-            var webnom = new WebNomClient
-            {
-                Host = "localhost", 
-                Port = 5011
-            };
-            webnom.Start();
+                var websocket = new WebSocketServer(IPAddress.Any, 5010, true)
+                {
+                    SslConfiguration = {ServerCertificate = Key.Cert},
+                    Log = {Level = LogLevel.Info}
+                };
+                websocket.AddWebSocketService<AuthService>("/Auth");
+                websocket.Start();
 
-            while(true)
+                var webnom = new WebNomClient
+                {
+                    Host = "localhost",
+                    Port = 5011
+                };
+                webnom.Start();
+
+                while (true)
+                {
+                    if (Console.ReadLine() == "exit")
+                        Environment.Exit(0);
+                }
+            }
+            catch (Exception ex)
             {
-                if (Console.ReadLine() == "exit")
-                    Environment.Exit(0);
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine(ex.StackTrace);
+                Console.ResetColor();
             }
         }
     }
