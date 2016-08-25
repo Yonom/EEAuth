@@ -1,26 +1,41 @@
 <div style="text-align: center">
-    <h1></h1>
     <row class="row">
         <h1 class="cover-heading"><b><?= $data['name'] ?></b><br/>
         <small> would like to verify your identity.</small></h1>
-        <p>Please log into EE and join the following room:</p>
-        <div class="row">
-            <div class="card col-xs-offset-3 col-xs-6" id="roomid">
-                Generating room id, please wait...
+
+        <div class="row col-xs-offset-3 col-xs-6">
+          <div id="accountselection">
+            <p>Please select your account type:</p>
+            <div class="links">
+                <a target="_blank" class="btn btn-success" id="eelogin" onclick="continueClicked();">
+                    EE.COM
+                </a>
+                <a target="_blank" class="btn btn-primary" id="fblogin" onclick="continueClicked();">
+                    Facebook
+                </a>
             </div>
+            <h1 class="cover-heading"><small>OR</small></h1>
+            <p>Join this Room Id: <p id="roomid"></p></p>
+            <br>
+            <button type="button" class="btn btn-success" onclick="continueClicked();">Continue »</button>
+          </div>
         </div>
-        <p><i>(keep this tab open in the background)</i></p>
-        <div class="links">
-            <a target="_blank" id="eelogin">
-                <img src="/images/ee_login.png" alt="Direct link for everybodyedits.com users.">
-            </a>
-            <a target="_blank" id="fblogin">
-                <img src="/images/facebook_login.png" alt="Direct link for facebook.com users.">
-            </a>
+
+        <div class="row col-xs-offset-3 col-xs-6">
+          <div id="codecontainer" class="code-container" style="display:none;">
+              <br>
+              <p>Enter the verification code here:</p>
+              <form class="" action="index.html" method="post">
+
+              <input class="form-control" type="text" id="codeinput" value="" placeholder="########"><br>
+              <button type="button" class="btn btn-success" onclick="verify();">Verify Account »</button>
+          </div>
         </div>
-        <div id="codecontainer" class="code-container">
-            <p>and chat the following code in the room</p>
-            <h2 id="code"></h2>
+
+        <div class="row col-xs-offset-3 col-xs-6">
+          <div id="errorcontainer" style="display:none;">
+            <p id="errortext">
+          </div>
         </div>
     </row>
 </div>
@@ -29,15 +44,24 @@
     var roomid = document.getElementById('roomid');
     var eelogin = document.getElementById('eelogin');
     var fblogin = document.getElementById('fblogin');
-    var code = document.getElementById('code');
     var codecontainer = document.getElementById('codecontainer');
+    var accountselection = document.getElementById('accountselection');
+    var errorcontainer = document.getElementById('errorcontainer');
+    var errortext = document.getElementById('errortext');
+    var codeinput = document.getElementById('codeinput');
+
     var ws = new WebSocket("wss://spambler.com:5010/Auth" + window.location.search);
+
+    window.onerror = function(msg, url, linenumber) {
+        alert('Error message: '+msg+'\nURL: '+url+'\nLine Number: '+linenumber);
+        return true;
+    }
 
     ws.onmessage = function (event) {
         var args = event.data.split(" ");
         console.log(args);
         if (args[0] == "room"){
-            room(args[1], args[2]);
+            room(args[1]);
         } else if (args[0] == "redirect") {
             success();
             window.location = args[1];
@@ -52,22 +76,23 @@
             error("Disconnected. Please try again later.");
     }
 
-    function room(roomId, token) {
-        roomid.innerHTML = roomId;
-        code.innerHTML = token;
+    function room(roomId) {
+        roomid.innerHTML = "<b>" + roomId + "</b>";
         showLinks(roomId);
     }
 
     function success() {
         roomid.innerHTML = "Success!";
         roomid.color = "green";
-        hideLinks();
     }
 
     function error(message) {
-        roomid.innerHTML = message;
-        roomid.style.color = "red";
-        hideLinks();
+        errortext.innerHTML = "<b>" + message + "</b>";
+        errortext.style.color = "red";
+
+        accountselection.style.display = "none";
+        codecontainer.style.display = "none";
+        errorcontainer.style.display = "inline";
     }
 
     function showLinks(roomId) {
@@ -76,12 +101,19 @@
 
         eelogin.style.display = "inline";
         fblogin.style.display = "inline";
-        codecontainer.style.display = "inline";
     }
 
     function hideLinks() {
         eelogin.style.display = "none";
         fblogin.style.display = "none";
-        codecontainer.style.display = "none";
+    }
+
+    function continueClicked() {
+        accountselection.style.display = "none";
+        codecontainer.style.display = "inline";
+    }
+
+    function verify() {
+        ws.send("verifyCode" + codeinput.value.toString());
     }
 </script>

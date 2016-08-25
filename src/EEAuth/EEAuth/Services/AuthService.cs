@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading;
 using EEAuth.Helpers;
 using EEAuth.Security;
-using PlayerIOClient;
-using ServiceStack;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -14,14 +11,9 @@ namespace EEAuth.Services
     internal class AuthService : WebSocketBehavior
     {
         private readonly ManualResetEvent _timeoutResetEvent = new ManualResetEvent(false);
-        private Connection _connection;
         private KeyPair _keyPair;
         private Uri _redirectUri;
         private string _state;
-        private string _username;
-        private string _connectUserId;
-        private int _userId;
-        private int _token;
 
         public AuthService()
         {
@@ -49,10 +41,7 @@ namespace EEAuth.Services
 
             if (this.LoadArgs())
             {
-                string worldId = EEHelper.GenerateWorldId();
-                this._token = this.GetToken();
-                this.Send("room " + worldId + " " + this._token);
-                EEHelper.Connect(worldId, this.OnEEConnect, this.OnEEError);
+                this.Send("room " + EEHelper.worldId);
             }
         }
 
@@ -84,97 +73,30 @@ namespace EEAuth.Services
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            if (this._token.ToString("D") == e.Data)
-            {
-                this.FinishLogin();
-            }
-        }
+            Player selectedPlayer = Global.Bot.Players.Values.FirstOrDefault((Player p) => "verifyCode" + p.Token == e.Data);
+            Console.WriteLine(e.Data);
 
-        protected override void OnClose(CloseEventArgs e)
-        {
-            if (this._connection != null)
-                this._connection.Disconnect();
+            if (selectedPlayer == null)
+            {
+                Error("Invalid key! Please reload page.");
+                return;
+            }
+
+            FinishLogin(selectedPlayer.Username, selectedPlayer.ConnectUserId);
+            Global.Bot.PmTo(selectedPlayer.Username, "Thank you for using EEAuth. You may now leave this world.");
+            this.Close();
         }
 
         private void TimeoutWork()
         {
             this._timeoutResetEvent.WaitOne(new TimeSpan(0, 10, 0));
             if (this.Context.WebSocket.IsAlive)
-                this.Error("Authentication timed out.");
+                this.Error("Authentication timed out. Please reload page.");
         }
 
-        private void OnEEConnect(Connection conn)
+        private void FinishLogin(string username, string connectUserId)
         {
-            this._connection = conn;
-            this._connection.OnMessage += this.OnEEMessage;
-            this._connection.Send("init");
-        }
-
-        private void OnEEError(PlayerIOError err)
-        {
-            this.Error("Problem communicating with EE. Please try again later.");
-            this.Log.Error(err.Message);
-        }
-
-        private void OnEEMessage(object sender, Message m)
-        {
-            if (m.Type == "init")
-            {
-                this._connection.Send("init2");
-            }
-            else if (m.Type == "k")
-            {
-                this.Chat("You are about to login with EEAuth.");
-            }
-            else if (m.Type == "add" && m.GetBoolean(8))
-            {
-                this._userId = m.GetInt(0);
-                this._username = m.GetString(1);
-                this._connectUserId = m.GetString(2);
-
-                ThreadPool.QueueUserWorkItem(delegate {
-                    Thread.Sleep(1000);
-                    this.Chat(this._username.ToUpper() + ": Please chat your code to confirm the login.");
-                });
-            }
-            else if (m.Type == "say" && m.GetInt(0) == this._userId)
-            {
-                if (m.GetString(1).StartsWithIgnoreCase(this._token.ToString()))
-                {
-                    this.Chat("Login complete. You may now exit this room.");
-                    this.FinishLogin();
-                }
-            }
-        }
-
-        private int GetToken()
-        {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                const long diff = 99999999 - 10000000;
-                var uint32Buffer = new byte[4];
-                while (true)
-                {
-                    rng.GetBytes(uint32Buffer);
-                    UInt32 rand = BitConverter.ToUInt32(uint32Buffer, 0);
-                    const long max = (1 + (Int64)UInt32.MaxValue);
-                    const long remainder = max % diff;
-                    if (rand < max - remainder)
-                    {
-                        return (Int32)(10000000 + (rand % diff));
-                    }
-                }
-            }
-        }
-
-        private void Chat(string text)
-        {
-            this._connection.Send("say", text);
-        }
-
-        private void FinishLogin()
-        {
-            this.Send("redirect " + ResponseHelper.GetUrl(this._keyPair, this._redirectUri, this.Context.QueryString["redirect_uri"], this._username, this._connectUserId, this._state));
+            this.Send("redirect " + ResponseHelper.GetUrl(this._keyPair, this._redirectUri, this.Context.QueryString["redirect_uri"], username, connectUserId, this._state));
             this.Close();
         }
 

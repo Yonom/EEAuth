@@ -13,6 +13,8 @@ namespace EEAuth
     {
         private static void Main()
         {
+            Global.Bot = new AuthBot();
+
             var websocket = new WebSocketServer(IPAddress.Any, 5010, true)
             {
                 SslConfiguration = { ServerCertificate = Key.Cert },
