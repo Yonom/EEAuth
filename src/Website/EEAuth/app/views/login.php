@@ -3,31 +3,33 @@
         <h1 class="cover-heading"><b><?= $data['name'] ?></b><br/>
         <small> would like to verify your identity.</small></h1>
 
+        <br>
+
         <div class="row col-xs-offset-2 col-xs-8">
           <div id="accountselection">
-            <p>Please select your account type:</p>
+            <p>Click to open new page:</p>
             <div class="links">
-                <a target="_blank" id="eelogin" onclick="continueClicked();">
-                    <img src="/images/ee_login.png" alt="Direct link for everybodyedits.com users.">
+                <a target="_blank" id="eelogin" onclick="continueClicked();" data-toggle="tooltip" title="Login with everybodyedits.com">
+                    <img src="/images/ee_login.png">
                 </a>
-                <a target="_blank" id="fblogin" onclick="continueClicked();">
-                    <img src="/images/facebook_login.png" alt="Direct link for facebook.com users.">
+                <a target="_blank" id="fblogin" onclick="continueClicked();" data-toggle="tooltip" title="Login with facebook.com">
+                    <img src="/images/facebook_login.png">
                 </a>
             </div>
-            <h1 class="cover-heading"><small>OR</small></h1>
-            <p>Join this world using the 'ID' button in the lobby: <p id="roomid"></p></p>
+            <br><br>
+            <p>You can also join this world by clicking the "ID" button in the lobby and by entering this world id: <p id="roomid"></p></p>
             <br>
-            <button type="button" class="btn btn-success" onclick="continueClicked();">Continue »</button>
+            <button type="button" class="btn btn-success" onclick="continueClicked();">Enter Authentication Code »</button>
           </div>
         </div>
 
         <div class="row col-xs-offset-3 col-xs-6">
           <div id="codecontainer" class="code-container" style="display:none;">
-              <br>
-              <p>Enter the verification code here:</p>
+
+              <p>Enter your authentication code here:</p>
               <form onsubmit="verify(); return false;">
-                <input class="form-control" type="password" id="codeinput" value=""><br>
-                <button type="submit" class="btn btn-success">Verify Account »</button>
+                <input class="form-control" type="text" id="codeinput" maxlength="16" value=""><br>
+                <button type="submit" class="btn btn-success">Submit Authentication Code »</button>
               </form>
           </div>
         </div>
@@ -35,6 +37,13 @@
         <div class="row col-xs-offset-3 col-xs-6">
           <div id="errorcontainer" style="display:none;">
             <p id="errortext">
+          </div>
+        </div>
+
+        <div class="tooltip top" role="tooltip">
+          <div class="tooltip-arrow"></div>
+          <div class="tooltip-inner">
+            Some tooltip text!
           </div>
         </div>
     </row>
@@ -77,7 +86,7 @@
     }
 
     function room(roomId) {
-        roomid.innerHTML = "<h3 class=\"cover-heading\">" + roomId + "</h3>";
+        roomid.innerHTML = "<h4 class=\"cover-heading\"><i>" + roomId + "</i></h4>";
         showLinks(roomId);
     }
 
