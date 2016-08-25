@@ -3,19 +3,19 @@
         <h1 class="cover-heading"><b><?= $data['name'] ?></b><br/>
         <small> would like to verify your identity.</small></h1>
 
-        <div class="row col-xs-offset-3 col-xs-6">
+        <div class="row col-xs-offset-2 col-xs-8">
           <div id="accountselection">
             <p>Please select your account type:</p>
             <div class="links">
-                <a target="_blank" class="btn btn-success" id="eelogin" onclick="continueClicked();">
-                    EE.COM
+                <a target="_blank" id="eelogin" onclick="continueClicked();">
+                    <img src="/images/ee_login.png" alt="Direct link for everybodyedits.com users.">
                 </a>
-                <a target="_blank" class="btn btn-primary" id="fblogin" onclick="continueClicked();">
-                    Facebook
+                <a target="_blank" id="fblogin" onclick="continueClicked();">
+                    <img src="/images/facebook_login.png" alt="Direct link for facebook.com users.">
                 </a>
             </div>
             <h1 class="cover-heading"><small>OR</small></h1>
-            <p>Join this Room Id: <p id="roomid"></p></p>
+            <p>Join this world using the 'ID' button in the lobby: <p id="roomid"></p></p>
             <br>
             <button type="button" class="btn btn-success" onclick="continueClicked();">Continue »</button>
           </div>
@@ -26,7 +26,7 @@
               <br>
               <p>Enter the verification code here:</p>
               <form onsubmit="verify(); return false;">
-                <input class="form-control" type="text" id="codeinput" value="" placeholder="########"><br>
+                <input class="form-control" type="text" id="codeinput" value="" placeholder="01234567"><br>
                 <button type="submit" class="btn btn-success">Verify Account »</button>
               </form>
           </div>
@@ -77,7 +77,7 @@
     }
 
     function room(roomId) {
-        roomid.innerHTML = "<b>" + roomId + "</b>";
+        roomid.innerHTML = "<h3 class=\"cover-heading\">" + roomId + "</h3>";
         showLinks(roomId);
     }
 
