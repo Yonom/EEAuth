@@ -18,6 +18,7 @@ namespace EEAuth.Services
         public AuthService()
         {
             this.OriginValidator = this.MyOriginValidator;
+            this.IgnoreExtensions = true;
         }
 
         private bool MyOriginValidator(string s)
