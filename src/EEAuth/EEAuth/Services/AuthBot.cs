@@ -14,6 +14,11 @@ namespace EEAuth.Services
 
         public AuthBot()
         {
+            this.Connect();
+        }
+
+        public void Connect()
+        {
             EEHelper.Connect(EEHelper.worldId, this.OnEEConnect, this.OnEEError);
         }
 
@@ -21,7 +26,14 @@ namespace EEAuth.Services
         {
             this._connection = conn;
             this._connection.OnMessage += this.OnEEMessage;
+            this._connection.OnDisconnect += this.OnEEDisconnect;
             this._connection.Send("init");
+        }
+
+        private void OnEEDisconnect(object sender, string arg)
+        {
+            Thread.Sleep(3000);
+            this.Connect();
         }
 
         private void OnEEError(PlayerIOError err)

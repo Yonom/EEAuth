@@ -82,9 +82,9 @@ namespace EEAuth.Services
                 return;
             }
 
-            FinishLogin(selectedPlayer.Username, selectedPlayer.ConnectUserId);
             Global.Bot.PmTo(selectedPlayer.Username, "Thank you for using EEAuth. You may now leave this world.");
-            this.Close();
+            Global.Bot.Players.Remove(Global.Bot.Players.FirstOrDefault(val => val.Value == selectedPlayer).Key);
+            FinishLogin(selectedPlayer.Username, selectedPlayer.ConnectUserId);
         }
 
         private void TimeoutWork()
