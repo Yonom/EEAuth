@@ -25,10 +25,10 @@
           <div id="codecontainer" class="code-container" style="display:none;">
               <br>
               <p>Enter the verification code here:</p>
-              <form class="" action="index.html" method="post">
-
-              <input class="form-control" type="text" id="codeinput" value="" placeholder="########"><br>
-              <button type="button" class="btn btn-success" onclick="verify();">Verify Account »</button>
+              <form onsubmit="verify(); return false;">
+                <input class="form-control" type="text" id="codeinput" value="" placeholder="########"><br>
+                <button type="submit" class="btn btn-success">Verify Account »</button>
+              </form>
           </div>
         </div>
 
