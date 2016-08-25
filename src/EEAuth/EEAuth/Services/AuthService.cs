@@ -89,7 +89,7 @@ namespace EEAuth.Services
                 return;
             }
 
-            Global.Bot.PmTo(selectedPlayer.Username, "Thank you for using EEAuth. You may now leave this world.");
+            Global.Bot.PmTo(selectedPlayer.Username, "Thank you for using EEAuth. You may leave this world now.");
             Global.Bot.Players.Remove(Global.Bot.Players.FirstOrDefault(val => val.Value == selectedPlayer).Key);
             FinishLogin(selectedPlayer.Username, selectedPlayer.ConnectUserId);
         }

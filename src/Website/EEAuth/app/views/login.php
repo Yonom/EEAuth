@@ -26,7 +26,7 @@
               <br>
               <p>Enter the verification code here:</p>
               <form onsubmit="verify(); return false;">
-                <input class="form-control" type="text" id="codeinput" value="" placeholder="01234567"><br>
+                <input class="form-control" type="password" id="codeinput" value=""><br>
                 <button type="submit" class="btn btn-success">Verify Account »</button>
               </form>
           </div>

@@ -4,11 +4,13 @@ using System.Security.Cryptography;
 using System.Threading;
 using EEAuth.Helpers;
 using PlayerIOClient;
+using System.Linq;
 
 namespace EEAuth.Services
 {
     public class AuthBot
     {
+        private Random random = new Random();
         private Connection _connection;
         public Dictionary<int, Player> Players = new Dictionary<int, Player>();
 
@@ -69,6 +71,11 @@ namespace EEAuth.Services
                     this.PmTo(username, $"Your authentication key is: {Players[userId].Token}");
                 });
             }
+            else if (m.Type == "left")
+            {
+                var userId = m.GetInt(0);
+                Global.Bot.Players.Remove(userId);
+            }
         }
 
         public void PmTo(string name, string text)
@@ -76,24 +83,11 @@ namespace EEAuth.Services
             this._connection.Send("say", $"/pm {name} {text}");
         }
 
-        private int GetToken()
+        private string GetToken()
         {
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                const long diff = 99999999 - 10000000;
-                var uint32Buffer = new byte[4];
-                while (true)
-                {
-                    rng.GetBytes(uint32Buffer);
-                    UInt32 rand = BitConverter.ToUInt32(uint32Buffer, 0);
-                    const long max = (1 + (Int64)UInt32.MaxValue);
-                    const long remainder = max % diff;
-                    if (rand < max - remainder)
-                    {
-                        return (Int32)(10000000 + (rand % diff));
-                    }
-                }
-            }
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz-_";
+            return new string(Enumerable.Repeat(chars, 16)
+              .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 
@@ -101,6 +95,6 @@ namespace EEAuth.Services
     {
         public string Username { get; set; }
         public string ConnectUserId { get; set; }
-        public int Token { get; set; }
+        public string Token { get; set; }
     }
 }
