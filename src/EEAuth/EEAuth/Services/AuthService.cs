@@ -46,6 +46,12 @@ namespace EEAuth.Services
             }
         }
 
+        protected override void OnClose(CloseEventArgs e)
+        {
+            Console.WriteLine($"Connection closed: Clean? {e.WasClean}, Code: {e.Code}, Reason: {e.Reason}");
+            this._timeoutResetEvent.Set();
+        }
+
         private bool LoadArgs()
         {
             this._state = this.Context.QueryString["state"];
