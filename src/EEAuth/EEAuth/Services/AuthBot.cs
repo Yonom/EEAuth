@@ -5,6 +5,7 @@ using System.Threading;
 using EEAuth.Helpers;
 using PlayerIOClient;
 using System.Linq;
+using System.Xml;
 
 namespace EEAuth.Services
 {
@@ -46,59 +47,67 @@ namespace EEAuth.Services
 
         private void OnEEMessage(object sender, Message m)
         {
-            if (m.Type == "init")
+            try
             {
-                this._connection.Send("init2");
-                this._connection.Send("name", "EEAuth v2.0.1");
-            }
-            else if (m.Type == "add" && m.GetBoolean(8))
-            {
-                var userId = m.GetInt(0);
-                var username = m.GetString(1);
-                var connectUserId = m.GetString(2);
-
-                Players.Add(userId, new Player
+                if (m.Type == "init")
                 {
-                    ConnectUserId = connectUserId,
-                    Username = username,
-                    Token = GetToken()
-                });
-
-                ThreadPool.QueueUserWorkItem(delegate {
-                    Thread.Sleep(1000);
-                    this.PmTo(username, "Hello, you are logging in with EEAuth.");
-                    Thread.Sleep(1000);
-                    this.PmTo(username, $"Your authentication code is: {Players[userId].Token}");
-                });
-            }
-            else if (m.Type == "left")
-            {
-                var userId = m.GetInt(0);
-
-                if (Global.Bot.Players.ContainsKey(userId))
-                    Global.Bot.Players.Remove(userId);
-            }
-            else if (m.Type == "say")
-            {
-                var userId = m.GetInt(0);
-                var text = m.GetString(1);
-
-                if (text.ToLower().Contains(Players[userId].Token.ToLower()))
+                    this._connection.Send("init2");
+                    this._connection.Send("name", "EEAuth v2.0.1");
+                }
+                else if (m.Type == "add" && m.GetBoolean(8))
                 {
-                    if (Players[userId].TokenSpoils < 3)
+                    var userId = m.GetInt(0);
+                    var username = m.GetString(1);
+                    var connectUserId = m.GetString(2);
+
+                    Players.Add(userId, new Player
                     {
-                        var newToken = GetToken();
-                        Players[userId].Token = newToken;
-                        Players[userId].TokenSpoils++;
-                        PmTo(Players[userId].Username,
-                            $"Please do NOT share your authentication code in the chat! Here's a new code: {newToken}");
-                    }
-                    else
+                        ConnectUserId = connectUserId,
+                        Username = username,
+                        Token = GetToken()
+                    });
+
+                    ThreadPool.QueueUserWorkItem(delegate
                     {
-                        KickUser(Players[userId].Username, "Do not share your authentication code in the chat.");
+                        Thread.Sleep(1000);
+                        this.PmTo(username, "Hello, you are logging in with EEAuth.");
+                        Thread.Sleep(1000);
+                        this.PmTo(username, $"Your authentication code is: {Players[userId].Token}");
+                    });
+                }
+                else if (m.Type == "left")
+                {
+                    var userId = m.GetInt(0);
+
+                    if (Global.Bot.Players.ContainsKey(userId))
                         Global.Bot.Players.Remove(userId);
+                }
+                else if (m.Type == "say")
+                {
+                    var userId = m.GetInt(0);
+                    var text = m.GetString(1);
+
+                    if (text.ToLower().Contains(Players[userId].Token.ToLower()))
+                    {
+                        if (Players[userId].TokenSpoils < 3)
+                        {
+                            var newToken = GetToken();
+                            Players[userId].Token = newToken;
+                            Players[userId].TokenSpoils++;
+                            PmTo(Players[userId].Username,
+                                $"Please do NOT share your authentication code in the chat! Here's a new code: {newToken}");
+                        }
+                        else
+                        {
+                            KickUser(Players[userId].Username, "Do not share your authentication code in the chat.");
+                            Global.Bot.Players.Remove(userId);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
             }
         }
 
